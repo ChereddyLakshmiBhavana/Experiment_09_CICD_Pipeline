@@ -1,0 +1,39 @@
+
+name: Kidney Disease ML CI-CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Train Machine Learning Model
+        run: python train_model.py
+
+      - name: Run Automated Tests
+        run: pytest -v
+
+      - name: Publish Model Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kidney-disease-trained-model
+          path: kidney_cicd_model.pkl
